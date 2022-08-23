@@ -6,7 +6,7 @@ from pprint import pprint
 import reader
 import distributions
 
-
+plt.style.use('seaborn-deep')
 data_path = './data/messages.csv'
 
 df = pd.read_csv(data_path)
