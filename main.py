@@ -6,24 +6,41 @@ from pprint import pprint
 import reader
 import distributions
 
+# Establezco estilo por defecto de graficas
 plt.style.use('seaborn-deep')
-data_path = './data/messages.csv'
 
-df = pd.read_csv(data_path)
-df = reader.filtrar_dataframe(df)
+# Tambien donde estan los datos a usar en la simulacion
+paths = {
+    'messages' : './data/messages.csv',
+    'tutorials' : './data/tutorials.csv',
+    'shifts' : './data/shifts.csv',
+}
 
+day_start = 14
+day_end = 22
+hour_bins = [n for n in range(day_start, day_end+1)]
 
-l = 14
-u = 21
-timestamps = map(reader.timestamp_to_hour, df['sent_date'])
-timestamps = [t for t in timestamps if l <= t <= u]
+# A priori, leo los csv en formato csv
+tutorials_df = pd.read_csv(paths['tutorials']) 
+messages_df = pd.read_csv(paths['messages'])
+
+# Saco la lista de tutores, esto para filtrar mensajes
+tutors = reader.get_tutors(tutorials_df)
+
+# Filtro los mensajes (remuevo mensajes no relacionados a solicitud o actividad de tutorias)
+messages_df = reader.filter_messages(messages_df, tutors, day_start, day_end)
+
+timestamps = list(messages_df.sent_hour)
+
+# print(sorted(timestamps))
 
 # print(timestamps)
 
-n, bins = np.histogram(timestamps, bins=u-l)
+n, bins = np.histogram(timestamps, bins=hour_bins)
 
 dist = distributions.histogram_to_generator(n, bins)
 
 nn = [dist() for n in range(10000)]
-plt.hist(nn, bins=u-l) #type: ignore
+plt.hist(nn, bins=hour_bins) #type: ignore
+
 plt.show()
