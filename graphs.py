@@ -18,7 +18,7 @@ def graph_message_hour_histogram(df, day_start, day_end):
     plt.xlabel('Hora')
     plt.ylabel('Frecuencia')
     plt.title('Histograma de mensajes por hora del dia (Filtrados)')
-    plt.show()
+    plt.savefig('message_hour_histogram.png')
 
 
 def graph_tutorial_hour_histogram(df, day_start, day_end):
@@ -36,7 +36,7 @@ def graph_tutorial_hour_histogram(df, day_start, day_end):
     plt.xlabel('Hora')
     plt.ylabel('Frecuencia')
     plt.title('Histograma de tutorias por hora del dia (Filtradas)')
-    plt.show()
+    plt.savefig('tutorial_hour_histogram.png')
 
 def graph_tutorial_time_histogram(df, hard_min=5, hard_max=120, minute_step=10):
 
@@ -56,4 +56,23 @@ def graph_tutorial_time_histogram(df, hard_min=5, hard_max=120, minute_step=10):
     plt.xlabel('Minutos')
     plt.ylabel('Frecuencia')
     plt.title('Histograma de tiempos de tutoria')
-    plt.show()
+    plt.savefig('tutorial_time_histogram.png')
+
+
+def graph_shift_hour_histogram(df, day_start, day_end, hour_step=2):
+
+    hour_bins = [n for n in range(day_start, day_end+1, hour_step)]
+    durations = list(df.shift_hour)
+
+    n, bins = np.histogram(durations, bins=hour_bins)
+
+    dist = distributions.histogram_to_generator(n, bins)
+
+    nn = [dist() for n in range(10000)]
+
+    fig = plt.figure(4)
+    plt.hist(nn, bins=hour_bins) #type: ignore
+    plt.xlabel('Hora')
+    plt.ylabel('Frecuencia')
+    plt.title('Histograma de tutores por hora del dia')
+    plt.savefig('shift_hour_histogram.png')

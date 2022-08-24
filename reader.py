@@ -70,3 +70,20 @@ def filter_tutorials(df, lower_hour, upper_hour):
     df = df[df.tutorial_hour >= lower_hour]
 
     return df
+
+def filter_shifts(df, lower_hour, upper_hour):
+    # Agrego una columna con la hora del dia en la que se hizo la franjas
+    df['shift_hour'] = df.start_date.apply(timestamp_to_hour)
+    df.shift_hour += 0.25
+
+    # Y actualizo la columna de fecha de tutoria para que sea de tipo datetime
+    df.start_date = df.start_date.apply(timestamp_to_datetime)
+
+    # Tomo solo las franjas cuya hora estan dentro de la jornada de tutorias
+    df = df[df.shift_hour < upper_hour]
+    df = df[df.shift_hour >= lower_hour]
+
+    # Tomo franjas con horas validas
+    df = df[df.hours > 0]
+
+    return df
