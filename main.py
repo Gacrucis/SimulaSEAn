@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from pprint import pprint
 
 import reader
-import distributions
+import graphs
 
 # Establezco estilo por defecto de graficas
 plt.style.use('seaborn-deep')
@@ -29,18 +29,26 @@ tutors = reader.get_tutors(tutorials_df)
 
 # Filtro los mensajes (remuevo mensajes no relacionados a solicitud o actividad de tutorias)
 messages_df = reader.filter_messages(messages_df, tutors, day_start, day_end)
+# Y filtro tutorias con lo de arriba
+tutorials_df = reader.filter_tutorials(tutorials_df, day_start, day_end)
 
-timestamps = list(messages_df.sent_hour)
+graphs.graph_tutorial_time_histogram(tutorials_df)
 
-# print(sorted(timestamps))
+# timestamps = list(messages_df.sent_hour)
+# timestamps = list(tutorials_df.tutorial_hour)
 
-# print(timestamps)
+# # print(sorted(timestamps))
 
-n, bins = np.histogram(timestamps, bins=hour_bins)
+# # print(timestamps)
 
-dist = distributions.histogram_to_generator(n, bins)
+# n, bins = np.histogram(timestamps, bins=hour_bins)
 
-nn = [dist() for n in range(10000)]
-plt.hist(nn, bins=hour_bins) #type: ignore
+# dist = distributions.histogram_to_generator(n, bins)
 
-plt.show()
+# nn = [dist() for n in range(10000)]
+# plt.hist(nn, bins=hour_bins) #type: ignore
+
+# plt.xlabel('Hora')
+# plt.ylabel('Frecuencia')
+# plt.title('Histograma de mensajes por hora del dia (Filtrados)')
+# plt.show()

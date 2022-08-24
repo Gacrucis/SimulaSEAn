@@ -57,3 +57,16 @@ def filter_messages(df, tutor_list, lower_hour, upper_hour):
     df = df[~df.author_id.isin(tutor_list)]
 
     return df
+
+def filter_tutorials(df, lower_hour, upper_hour):
+    # Agrego una columna con la hora del dia en la que se hizo la tutoria
+    df['tutorial_hour'] = df.registered_date.apply(timestamp_to_hour)
+
+    # Y actualizo la columna de fecha de tutoria para que sea de tipo datetime
+    df.registered_date = df.registered_date.apply(timestamp_to_datetime)
+
+    # Tomo solo las tutorias  cuya hora estan dentro de la jornada de tutorias
+    df = df[df.tutorial_hour < upper_hour]
+    df = df[df.tutorial_hour >= lower_hour]
+
+    return df
