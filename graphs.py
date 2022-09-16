@@ -20,6 +20,8 @@ def graph_message_hour_histogram(df, day_start, day_end):
     plt.title('Histograma de mensajes por hora del dia (Filtrados)')
     plt.savefig('message_hour_histogram.png')
 
+    return dist
+
 
 def graph_tutorial_hour_histogram(df, day_start, day_end):
     hour_bins = [n for n in range(day_start, day_end+1)]
@@ -37,6 +39,8 @@ def graph_tutorial_hour_histogram(df, day_start, day_end):
     plt.ylabel('Frecuencia')
     plt.title('Histograma de tutorias por hora del dia (Filtradas)')
     plt.savefig('tutorial_hour_histogram.png')
+
+    return dist
 
 def graph_tutorial_time_histogram(df, hard_min=5, hard_max=120, minute_step=10):
 
@@ -58,6 +62,8 @@ def graph_tutorial_time_histogram(df, hard_min=5, hard_max=120, minute_step=10):
     plt.title('Histograma de tiempos de tutoria')
     plt.savefig('tutorial_time_histogram.png')
 
+    return dist
+
 
 def graph_shift_hour_histogram(df, day_start, day_end, hour_step=2):
 
@@ -76,3 +82,5 @@ def graph_shift_hour_histogram(df, day_start, day_end, hour_step=2):
     plt.ylabel('Frecuencia')
     plt.title('Histograma de tutores por hora del dia')
     plt.savefig('shift_hour_histogram.png')
+
+    return dist
