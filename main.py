@@ -1,13 +1,12 @@
-from random import random, randint
-from distributions import poisson, poisson_hom
+from random import randint
 import pandas as pd
 from matplotlib import pyplot as plt
 
+import distributions
 import reader
 import graphs
 
-# Establezco estilo por defecto de graficas
-plt.style.use('seaborn-deep') #type: ignore
+
 
 # Tambien donde estan los datos a usar en la simulacion
 paths = {
@@ -35,16 +34,15 @@ def main():
     tutorials_df = reader.filter_tutorials(tutorials_df, day_start, day_end)
     shifts_df = reader.filter_shifts(shifts_df, day_start, day_end)
 
-    # Obtengo funciones que generan numeros aleatorios de acuerdo a las distribuciones
-    # representadas por los histogramas
+    # Grafico los datos importados
     graphs.graph_tutorial_hour_histogram(tutorials_df, day_start, day_end)
     graphs.graph_shift_hour_histogram(shifts_df, day_start, day_end)
     
-    rmessage = graphs.graph_message_hour_histogram(messages_df, day_start, day_end)
+    # Defino funciones para generar numeros aleatorios de acuerdo a ciertas distribuciones
     rtutorialtime = graphs.graph_tutorial_time_histogram(tutorials_df)
-    rtutoramount = lambda: randint(1, 4)
+    rtutoramount = lambda: randint(1, 5)
 
-    shift_end_times = [float(n) for n in range(day_start+shift_delta, day_end+shift_delta, shift_delta)]
+    shift_end_times = [float(n) for n in range(shift_delta, day_end-day_start+shift_delta, shift_delta)]
 
     final_data = {
         'failed_tutorials' : {
@@ -67,15 +65,20 @@ def main():
         # Tiempo actual
         t = 0
 
+        # Tiempos de inicio y fin de dia
+        t_start = day_start
+        t_end = day_end - day_start
+
         # Siguiente tiempo de llegada
-        # t_arrivals = sorted([rmessage() + random() for _ in range(40)]) #type: ignore
-        t_arrivals = poisson(12)
+        t_arrivals = distributions.arrival_times(t_end)
         t_arrivals.append(float('inf'))
         t_arrival = t_arrivals.pop(0)
 
-        # Siguiente tiempo en el que sale una persona
+        # Cantidad de tutores para la primera franja
         tutor_amount = rtutoramount()
         t_exits = [float('inf') for n in range(tutor_amount)]
+
+        # Siguiente tiempo en el que sale una persona
         t_exit = min(t_exits)
 
         # Siguiente tiempo en el que ocurre un cambio de franja
@@ -83,17 +86,8 @@ def main():
         t_changes.append(float('inf'))
         t_change = t_changes.pop(0)
 
-        # Numero de gente llegada hasta el momento
-        n_arrivals = 0
-
-        # Tiempos de inicio y fin de dia
-        t_start = day_start
-        t_end = day_end
-
         # Cantidad de personas en cola para 
         queue = 0
-
-
         while t < t_end:
 
             t = min(t_arrival, t_exit, t_change)
@@ -103,8 +97,6 @@ def main():
 
             # Si el evento es de llegada
             if t == t_arrival:
-                n_arrivals += 1
-
                 t_arrival = t_arrivals.pop(0)
 
                 # Lo paso de minutos a horas

@@ -1,6 +1,5 @@
 import random
 import numpy as np
-from matplotlib import pyplot as plt
 
 # Genera una funcion generadora de numeros aleatorios
 # de acuerdo a la distribucion mostrada por un histograma
@@ -26,33 +25,38 @@ def histogram_to_generator(freq, bins):
 
     return dist
 
-def λ_func(x):
-    if (x <= 3):
-        return 750
-    else:
-        return -33.3 * x + 1900.1
+def exponential(l):
+    u = random.random()
+    return - (1 / l)  * np.log(u)
 
+def lambda_f(t):
+    if t < 4:
+        return 5
+    
+    return 20 - (t - 4) / 1
 
-def poisson(t_max, λ_max = 2000):
-    times = []
+def poisson_var(t_max):
+
     t = 0
-    while (t < t_max):
-        u = np.random.uniform(0, 1)
-        t = t - (1 / λ_max) * np.log(u)
-        if (t > t_max): break
-        if (np.random.uniform(0, 1) <= λ_func(t) / λ_max):
-            times.append(t)
+    tiempos = []
+    while True:
 
-    return times
+        u = random.random()
+        t = t - np.log(1 - u) / lambda_f(t)
 
-# 120, 0.7
-def poisson_hom(t_max, λ):
-    times = []
-    t = 0
-    while (t < t_max):
-        u = np.random.uniform(0, 1)
-        t = t - (1 / λ)  * np.log(u)
-        if (t > t_max): break
-        times.append(t)
+        if t > t_max:
+            break
+        else:
+            tiempos.append(t)
 
-    return times
+    return tiempos
+
+def arrival_times(t_max):
+    # Tomo la distribucion, la modifico para que sus valores esten entre 0 y 12
+    k = 22
+    times = [n * t_max / k for n in poisson_var(k)]
+
+    samples = min(46, len(times))
+
+    # Ahora limito la cantidad de tutorias para no hayan mas de 46 (el maximo historico)
+    return sorted(random.sample(times, samples))

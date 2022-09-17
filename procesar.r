@@ -4,12 +4,13 @@ final_tutor_amount = read.csv('final_tutor_amount.csv')
 
 final_failed_tutorials$total = rowSums(final_failed_tutorials[, ])
 final_cut_tutorials$total = rowSums(final_cut_tutorials[, ])
-final_tutor_amount$total = rowSums(final_tutor_amount[, ])
+# final_tutor_amount$total = rowSums(final_tutor_amount[, ])
 
 cols = colnames(final_tutor_amount)
 scores = final_failed_tutorials[, cols] + final_tutor_amount[, cols] + final_cut_tutorials[, cols]*0.1
 
 # Por cada franja, y para el total,  obtener la cantidad de tutores optima
+shift_mins = c()
 for (col in colnames(final_tutor_amount)) {
     df <- data.frame(matrix(ncol = 2, nrow = nrow(final_tutor_amount)))
     x <- c("tutor_amount", "score")
@@ -20,6 +21,12 @@ for (col in colnames(final_tutor_amount)) {
     # df$score = NA
     df$score = scores[, col]
 
-    aggregate(df$score, list(df$tutor_amount), FUN = mean)
-   
+    agg = aggregate(df$score, list(df$tutor_amount), FUN = mean)
+
+    print(agg)
+    shift_mins = append(shift_mins, which.min(agg$x))
 }
+
+
+print(shift_mins)
+barplot(shift_mins)
