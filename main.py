@@ -1,4 +1,5 @@
 from random import random, randint
+from distributions import poisson, poisson_hom
 import pandas as pd
 from matplotlib import pyplot as plt
 
@@ -67,7 +68,8 @@ def main():
         t = 0
 
         # Siguiente tiempo de llegada
-        t_arrivals = sorted([rmessage() + random() for _ in range(40)]) #type: ignore
+        # t_arrivals = sorted([rmessage() + random() for _ in range(40)]) #type: ignore
+        t_arrivals = poisson(12)
         t_arrivals.append(float('inf'))
         t_arrival = t_arrivals.pop(0)
 
